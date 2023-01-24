@@ -3,13 +3,13 @@ package routes
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-redis/redis"
 	"github.com/ministryofjustice/cloud-platform-go-get-module/utils"
 )
 
-func InitPostOne(r *gin.Engine, rdb *redis.Client, actualApiKey string) {
+func InitPostOne(r *gin.Engine, rdb utils.DataAccessLayer, actualApiKey string) {
 	r.POST("/update/:repo/:version", func(c *gin.Context) {
 		repo := c.Param("repo")
 
@@ -25,7 +25,7 @@ func InitPostOne(r *gin.Engine, rdb *redis.Client, actualApiKey string) {
 			return
 		}
 
-		if repo == "" {
+		if strings.TrimSpace(repo) == "" {
 			obj := utils.Response{
 				Status: http.StatusBadRequest,
 				Error:  []string{"Repo parameter is must be provided `/update/:repo_name/:updated_version_number`"},
@@ -35,7 +35,7 @@ func InitPostOne(r *gin.Engine, rdb *redis.Client, actualApiKey string) {
 		}
 
 		version := c.Param("version")
-		if repo == "" {
+		if strings.TrimSpace(version) == "" {
 			obj := utils.Response{
 				Status: http.StatusBadRequest,
 				Error:  []string{"Update parameter is must be provided eg. `/update/:repo_name/:updated_version_number`"},
@@ -65,4 +65,3 @@ func InitPostOne(r *gin.Engine, rdb *redis.Client, actualApiKey string) {
 	})
 
 }
-

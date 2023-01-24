@@ -29,3 +29,7 @@ spec:
                 secretKeyRef:
                   name: go-get-module-api-key
                   key: api_key
+            - name: REDIS_ADDR
+              value: "redis-helm-master.cloud-platform-go-get-module.svc.cluster.local" 
+            - name: GIN_MODE
+              value: "release"

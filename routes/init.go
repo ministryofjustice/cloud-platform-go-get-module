@@ -4,13 +4,13 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-redis/redis"
+	"github.com/ministryofjustice/cloud-platform-go-get-module/utils"
 	"go.uber.org/zap"
 
 	ginzap "github.com/gin-contrib/zap"
 )
 
-func InitRouter(r *gin.Engine, rdbClient *redis.Client, apiKey string) {
+func InitRouter(r *gin.Engine, rdbClient utils.DataAccessLayer, apiKey string) {
 	InitGetAll(r, rdbClient)
 	InitGetOne(r, rdbClient)
 	InitPostOne(r, rdbClient, apiKey)
