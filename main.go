@@ -1,33 +1,40 @@
 package main
 
 import (
-	"fmt"
-	"time"
+	"log"
+	"os"
 
-	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
+	"github.com/go-redis/redis"
+	"github.com/ministryofjustice/cloud-platform-go-get-module/routes"
+	"github.com/ministryofjustice/cloud-platform-go-get-module/utils"
 )
 
-func main() {
+func initGin(rdbClient *redis.Client, apiKey string) *gin.Engine {
 	r := gin.New()
-	logger, _ := zap.NewProduction()
+	// TODO: switch to release mode for production
+	// [GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+	// gin.SetMode(value string)
+	routes.InitLogger(r)
+	routes.InitRouter(r, rdbClient, apiKey)
 
-	// Add a ginzap middleware, which:
-	//   - Logs all requests, like a combined access and error log.
-	//   - Logs to stdout.
-	//   - RFC3339 with UTC time format.
-	r.Use(ginzap.Ginzap(logger, time.RFC3339, true))
+	return r
+}
 
-	// Logs all panic to error log
-	//   - stack means whether output the stack info.
-	r.Use(ginzap.RecoveryWithZap(logger, true))
+func main() {
+	redisVal, redisPresent := os.LookupEnv("REDIS_SECRET")
+	if redisVal == "" || !redisPresent {
+		log.Fatal("REDIS_SECRET is not set")
+	}
 
-	// Example ping request.
-	r.GET("/", func(c *gin.Context) {
-		c.String(200, "pong "+fmt.Sprint(time.Now().Unix()))
-	})
+	apiKeyVal, apiKeyPresent := os.LookupEnv("API_KEY")
+	if apiKeyVal == "" || !apiKeyPresent {
+		log.Fatal("API_KEY is not set")
+	}
 
-	// Listen and Server in 0.0.0.0:8080
+	rdbClient := utils.InitRedisClient(redisVal)
+	r := initGin(rdbClient, apiKeyVal)
+
+	// Listen and Server in 0.0.0.0:3000
 	r.Run(":3000")
 }
