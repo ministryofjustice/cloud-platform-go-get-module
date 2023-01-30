@@ -3,10 +3,10 @@ package init_app
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"github.com/google/go-github/v50/github"
 	"github.com/ministryofjustice/cloud-platform-go-get-module/utils"
+	"google.golang.org/appengine/log"
 )
 
 var owner = "ministryofjustice"
@@ -15,29 +15,31 @@ func InitDataClient(dataAddr, dataPassword string) utils.DataAccessLayer {
 	return initRedis(dataAddr, dataPassword)
 }
 
-func InitData(dataClient utils.DataAccessLayer) {
+func InitData(dataClient utils.DataAccessLayer) error {
 	client := github.NewClient(nil)
 	repos, err := getRepos(client)
 
 	if err != nil {
-		log.Println("Error getting repo names: ", err)
+		return fmt.Errorf("Error getting repo data from github API: %v", err)
 	}
 
 	for _, repo := range repos {
 		release, _, releaseErr := client.Repositories.GetLatestRelease(context.Background(), owner, *repo.Name)
 		if releaseErr != nil {
-			log.Println("Error getting latest release", releaseErr)
+			log.Warningf(context.Background(), "Error getting latest release: %v", releaseErr)
 			continue
 		}
 
 		latestVersion := release.GetTagName()
-		fmt.Println(*repo.Name, latestVersion)
 
 		dataErr := dataClient.Set(*repo.Name, latestVersion, 0).Err()
 		if dataErr != nil {
-			log.Println("Error setting version: ", dataErr)
+			log.Warningf(context.Background(), "Error setting version: %v", dataErr)
+			continue
 		}
 	}
+
+	return nil
 }
 
 func getRepos(client *github.Client) ([]*github.Repository, error) {
