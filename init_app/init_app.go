@@ -58,10 +58,8 @@ func InitEnvVars() (string, string, string, string) {
 	return ginModeVal, redisAddrVal, redisVal, apiKeyVal
 }
 
-func InitApi(ginMode, redisAddr, redisPassword, apiKey string) {
-	rdbClient := initRedis(redisAddr, redisPassword)
-
-	r := initGin(rdbClient, apiKey, ginMode)
+func InitApi(dataClient utils.DataAccessLayer, ginMode, apiKey string) {
+	r := initGin(dataClient, apiKey, ginMode)
 
 	// Listen and Server in 0.0.0.0:3000
 	err := r.Run(":3000")

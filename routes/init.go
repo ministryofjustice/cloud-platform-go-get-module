@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -14,6 +15,10 @@ func InitRouter(r *gin.Engine, rdbClient utils.DataAccessLayer, apiKey string) {
 	InitGetAll(r, rdbClient)
 	InitGetOne(r, rdbClient)
 	InitPostOne(r, rdbClient, apiKey)
+
+	r.GET("/healthz", func(c *gin.Context) {
+		c.Status(http.StatusOK)
+	})
 }
 
 func InitLogger(r *gin.Engine) {

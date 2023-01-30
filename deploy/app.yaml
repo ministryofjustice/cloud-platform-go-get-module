@@ -18,6 +18,11 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
+          readinessProbe:
+              httpGet:
+                path: /healthz
+                port: 3000
+              initialDelaySeconds: 5
           env:
             - name: REDIS_SECRET
               valueFrom:
@@ -33,3 +38,9 @@ spec:
               value: "redis-helm-master.cloud-platform-go-get-module.svc.cluster.local" 
             - name: GIN_MODE
               value: "release"
+          # lifecycle:
+          #   postStart:
+          #     exec:
+          #       command: 
+          #         - /app/startup 
+                    
