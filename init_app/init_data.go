@@ -6,7 +6,6 @@ import (
 
 	"github.com/google/go-github/v50/github"
 	"github.com/ministryofjustice/cloud-platform-go-get-module/utils"
-	"google.golang.org/appengine/log"
 )
 
 var owner = "ministryofjustice"
@@ -26,7 +25,7 @@ func InitData(dataClient utils.DataAccessLayer) error {
 	for _, repo := range repos {
 		release, _, releaseErr := client.Repositories.GetLatestRelease(context.Background(), owner, *repo.Name)
 		if releaseErr != nil {
-			log.Warningf(context.Background(), "Error getting latest release: %v", releaseErr)
+			fmt.Printf("Error getting latest release: %v", releaseErr)
 			continue
 		}
 
@@ -34,7 +33,7 @@ func InitData(dataClient utils.DataAccessLayer) error {
 
 		dataErr := dataClient.Set(*repo.Name, latestVersion, 0).Err()
 		if dataErr != nil {
-			log.Warningf(context.Background(), "Error setting version: %v", dataErr)
+			fmt.Printf("Error setting version: %v", dataErr)
 			continue
 		}
 	}

@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -48,7 +47,6 @@ func InitPostOne(r *gin.Engine, rdb utils.DataAccessLayer, actualApiKey string) 
 		// if there has been an error setting the value
 		// handle the error
 		if err != nil {
-			fmt.Println(err)
 			obj := utils.Response{
 				Status: http.StatusInternalServerError,
 				Error:  []string{"Writing to Redis"},
