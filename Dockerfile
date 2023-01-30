@@ -18,8 +18,6 @@ RUN go mod download
 # Build the Go app
 RUN CGO_ENABLED=0 go build -o /app/main .
 
-RUN CGO_ENABLED=0 go build -o /app/startup ./scripts
-
 RUN chown -R appuser:appgroup /app
 
 # second stage to obtain a very small image
@@ -28,12 +26,10 @@ FROM scratch
 # copy the ca-certificate.crt from the build stage
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
-COPY --from=builder /app/main /app/main
-
-COPY --from=builder /app/startup /app/startup
-
 # copy user permissions from builder
 COPY --from=builder /etc/passwd /etc/passwd
+
+COPY --from=builder /app/main /app/main
 
 USER 1000
 
