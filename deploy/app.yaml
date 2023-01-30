@@ -35,7 +35,10 @@ spec:
                   name: go-get-module-api-key
                   key: api_key
             - name: REDIS_ADDR
-              value: "redis-helm-master.cloud-platform-go-get-module.svc.cluster.local" 
+              valueFrom:
+                configMapKeyRef:
+                  name: redis-config
+                  key: redis-master-addr
             - name: GIN_MODE
               value: "release"
                     
