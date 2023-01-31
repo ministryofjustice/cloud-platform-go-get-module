@@ -1,33 +1,26 @@
 package main
 
 import (
-	"fmt"
-	"time"
+	"context"
 
-	ginzap "github.com/gin-contrib/zap"
-	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
+	"github.com/ministryofjustice/cloud-platform-go-get-module/init_app"
+	"golang.org/x/sync/errgroup"
+	"google.golang.org/appengine/log"
 )
 
 func main() {
-	r := gin.New()
-	logger, _ := zap.NewProduction()
+	ginMode, dataAddr, dataPassword, apiKey := init_app.InitEnvVars()
+	dataClient := init_app.InitDataClient(dataAddr, dataPassword)
 
-	// Add a ginzap middleware, which:
-	//   - Logs all requests, like a combined access and error log.
-	//   - Logs to stdout.
-	//   - RFC3339 with UTC time format.
-	r.Use(ginzap.Ginzap(logger, time.RFC3339, true))
+	g := new(errgroup.Group)
 
-	// Logs all panic to error log
-	//   - stack means whether output the stack info.
-	r.Use(ginzap.RecoveryWithZap(logger, true))
-
-	// Example ping request.
-	r.GET("/", func(c *gin.Context) {
-		c.String(200, "pong "+fmt.Sprint(time.Now().Unix()))
+	g.Go(func() error {
+		return init_app.InitData(dataClient)
 	})
 
-	// Listen and Server in 0.0.0.0:8080
-	r.Run(":3000")
+	if err := g.Wait(); err != nil {
+		log.Errorf(context.Background(), "Error bootstraping the repo version data into redis: %v", err)
+	}
+
+	init_app.InitApi(dataClient, ginMode, apiKey)
 }
