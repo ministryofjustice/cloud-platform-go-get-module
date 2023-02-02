@@ -35,4 +35,4 @@ USER 1000
 
 EXPOSE 3000
 
-CMD [ "/app/main" ]
+ENTRYPOINT [ "/app/main" ]
