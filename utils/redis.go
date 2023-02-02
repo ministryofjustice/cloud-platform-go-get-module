@@ -14,7 +14,7 @@ type DataAccessLayer interface {
 
 type RedisKeyVal struct {
 	Repo    string `json:"repo"`
-	Version string `json:"version"`
+	Version string `json:"currentVersion"`
 }
 
 type RedisDAL struct {

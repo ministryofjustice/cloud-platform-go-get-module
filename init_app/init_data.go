@@ -19,13 +19,13 @@ func InitData(dataClient utils.DataAccessLayer) error {
 	repos, err := getRepos(client)
 
 	if err != nil {
-		return fmt.Errorf("Error getting repo data from github API: %v", err)
+		return fmt.Errorf("error getting repo data from github API: %v", err)
 	}
 
 	for _, repo := range repos {
 		release, _, releaseErr := client.Repositories.GetLatestRelease(context.Background(), owner, *repo.Name)
 		if releaseErr != nil {
-			fmt.Printf("Error getting latest release: %v", releaseErr)
+			fmt.Printf("error getting latest release: %v", releaseErr)
 			continue
 		}
 
@@ -33,7 +33,7 @@ func InitData(dataClient utils.DataAccessLayer) error {
 
 		dataErr := dataClient.Set(*repo.Name, latestVersion, 0).Err()
 		if dataErr != nil {
-			fmt.Printf("Error setting version: %v", dataErr)
+			fmt.Printf("error setting version: %v", dataErr)
 			continue
 		}
 	}
