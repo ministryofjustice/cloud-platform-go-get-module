@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: application
-          image: jaskaransarkaria/cloud-platform-go-get-module:VERSION
+          image: {{ .Values.ecrUrl }}:{{ .Values.imageTag }}
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
@@ -22,7 +22,7 @@ spec:
               httpGet:
                 path: /healthz
                 port: 3000
-              initialDelaySeconds: 5
+              initialDelaySeconds: 2
           env:
             - name: REDIS_SECRET
               valueFrom:

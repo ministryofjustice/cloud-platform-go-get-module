@@ -1,0 +1,6 @@
+schemaVersion: "2.0.0"
+fileExistenceTests:
+  - name: "cloud-platform-go-get-module api binary"
+    path: "/app/main"
+    shouldExist: true
+
