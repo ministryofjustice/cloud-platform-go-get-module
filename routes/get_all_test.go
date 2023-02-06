@@ -30,7 +30,7 @@ func TestInitGetAll(t *testing.T) {
 			"GIVEN the correct param AND the param is in redis THEN return repos version data",
 			mockRdbClient,
 			200,
-			"[{\"repo\":\"foo\",\"version\":\"bar\"},{\"repo\":\"ping\",\"version\":\"pong\"},{\"repo\":\"sing\",\"version\":\"song\"}]",
+			"[{\"repo\":\"foo\",\"currentVersion\":\"bar\"},{\"repo\":\"ping\",\"currentVersion\":\"pong\"},{\"repo\":\"sing\",\"currentVersion\":\"song\"}]",
 		},
 		{
 			"GIVEN the correct param BUT redis is down THEN return an error",
