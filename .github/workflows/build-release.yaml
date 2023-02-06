@@ -78,7 +78,7 @@ jobs:
         id: deploy-image
         uses: vimeda/helm@v1.6.8
         with:
-          release: go-get-module-${{ steps.build-image.outputs.IMAGE_TAG }}
+          release: go-get-module
           namespace: cloud-platform-go-get-module
           chart: deploy
           values: |
