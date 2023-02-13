@@ -10,12 +10,15 @@ permissions:
 
 env:
   AWS_REGION: eu-west-2
-  ECR_REPOSITORY: webops/cloud-platform-go-get-module-ecr           # set this to your Amazon ECR repository name
-  KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
+  ECR_REPOSITORY: webops/cloud-platform-go-get-module-ecr
 
 jobs:
   docker:
     name: Build container, push to ECR and deploy to the cluster
+    strategy:
+      matrix:
+        env: ["development", "production"]
+    environment: ${{ matrix.env }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -55,6 +58,17 @@ jobs:
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_OUTPUT
           echo "FULL_IMAGE_ADDR=${{ env.ECR_URL }}:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
+      - name: Set cluster
+        id: set-cluster
+        run: |
+          if [ ${{ matrix.env }} == "development" ]
+          then
+            echo "CLUSTER=live-2" >> $GITHUB_OUTPUT
+          elif [ ${{ matrix.env }} == "production" ]
+          then
+            echo "CLUSTER=live" >> $GITHUB_OUTPUT
+          fi
+
       - name: Create cert certificate-authority
         id: create-cert-authority
         run: echo "${{ secrets.KUBE_CERT }}" > ca.crt
@@ -66,7 +80,7 @@ jobs:
         run: |
           kubectl config set-cluster "${KUBE_CLUSTER}" --certificate-authority=ca.crt --server="${KUBE_CLUSTER}"
           kubectl config set-credentials deploy-user --token="${{ secrets.KUBE_TOKEN }}"
-          kubectl config set-context "${KUBE_CLUSTER}" --cluster="${KUBE_CLUSTER}" --user=deploy-user --namespace=cloud-platform-go-get-module
+          kubectl config set-context "${KUBE_CLUSTER}" --cluster="${KUBE_CLUSTER}" --user=deploy-user --namespace="${{ secrets.KUBE_NAMESPACE }}"
           kubectl config use-context "${KUBE_CLUSTER}"
 
           # export flat kube config so helm image can read it
@@ -74,7 +88,7 @@ jobs:
           kubectl config view --flatten >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
 
-      - name: Deploy image to K8 cloud-platform-go-get-module namespace
+      - name: Deploy image to K8 cloud-platform-go-get-module (${{ matrix.env }}) namespace
         id: deploy-image
         uses: vimeda/helm@v1.6.8
         with:
@@ -84,6 +98,7 @@ jobs:
           values: |
             ecrUrl: ${{ secrets.ECR_URL }}
             imageTag: ${{ steps.build-image.outputs.IMAGE_TAG }}
+            cluster: ${{ steps.set-cluster.outputs.CLUSTER }}
         env:
           KUBECONFIG_FILE: ${{ env.FLAT_KUBE_CONFIG }}
 
