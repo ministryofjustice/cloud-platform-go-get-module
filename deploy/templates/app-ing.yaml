@@ -8,9 +8,9 @@ metadata:
 spec:
   tls:
     - hosts:
-        - modules.apps.live-2.cloud-platform.service.justice.gov.uk
+        - modules.apps.{{ .Values.cluster }}.cloud-platform.service.justice.gov.uk
   rules:
-    - host: modules.apps.live-2.cloud-platform.service.justice.gov.uk
+    - host: modules.apps.{{ .Values.cluster }}.cloud-platform.service.justice.gov.uk
       http:
         paths:
           - path: /
