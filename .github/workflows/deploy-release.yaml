@@ -64,9 +64,11 @@ jobs:
           if [ ${{ matrix.env }} == "development" ]
           then
             echo "CLUSTER=live-2" >> $GITHUB_OUTPUT
+            echo "INGRESS_COLOUR=blue" >> $GITHUB_OUTPUT
           elif [ ${{ matrix.env }} == "production" ]
           then
             echo "CLUSTER=live" >> $GITHUB_OUTPUT
+            echo "INGRESS_COLOUR=green" >> $GITHUB_OUTPUT
           fi
 
       - name: Create cert certificate-authority
@@ -93,12 +95,13 @@ jobs:
         uses: vimeda/helm@v1.6.8
         with:
           release: go-get-module
-          namespace: cloud-platform-go-get-module
+          namespace: ${{ secrets.KUBE_NAMESPACE }}
           chart: deploy
           values: |
             ecrUrl: ${{ secrets.ECR_URL }}
             imageTag: ${{ steps.build-image.outputs.IMAGE_TAG }}
             cluster: ${{ steps.set-cluster.outputs.CLUSTER }}
+            ingressIdentifier: api-${{ secrets.KUBE_NAMESPACE }}-${{ steps.set-cluster.outputs.INGRESS_COLOUR }}
         env:
           KUBECONFIG_FILE: ${{ env.FLAT_KUBE_CONFIG }}
 
