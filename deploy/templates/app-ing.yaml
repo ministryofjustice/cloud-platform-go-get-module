@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   name: api
   annotations:
-    external-dns.alpha.kubernetes.io/set-identifier: api-blue
+    external-dns.alpha.kubernetes.io/set-identifier: {{ .Values.ingressIdentifier }}
     external-dns.alpha.kubernetes.io/aws-weight: "100"
 spec:
   tls:
