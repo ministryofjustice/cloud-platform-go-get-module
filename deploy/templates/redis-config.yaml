@@ -6,4 +6,4 @@ data:
   redis-config: |
     maxmemory 2mb
     maxmemory-policy allkeys-lru
-  redis-master-addr: "redis-helm-master.cloud-platform-go-get-module.svc.cluster.local" 
+  redis-master-addr: "redis-helm-master.{{ .Values.namespace }}.svc.cluster.local" 

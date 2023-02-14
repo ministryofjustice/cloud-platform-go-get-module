@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: application
-          image: {{ .Values.ecrUrl }}:{{ .Values.imageTag }}
+          image: '{{ .Values.ecrUrl }}:{{ .Values.imageTag }}'
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000

@@ -1,0 +1,37 @@
+name: Build and push a new production release
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-push:
+    uses: ./.github/workflows/build-and-push-workflow.yaml
+    with:
+      env: production
+      image_tag: ${{ github.ref_name }}
+      ecr_repo: webops/cloud-platform-go-get-module-ecr
+      aws_region: eu-west-2
+    secrets:
+      ecr_aws_access_key_id: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+      ecr_aws_secret_access_key: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
+      ecr_url: ${{ secrets.ECR_URL }}
+
+  deploy:
+    needs: build-and-push
+    uses: ./.github/workflows/deploy-workflow.yaml
+    with:
+      env: production
+      image_tag: ${{ github.ref_name }}
+    secrets:
+      kube_namespace: "${{ secrets.KUBE_NAMESPACE }}"
+      kube_cert: "${{ secrets.KUBE_CERT }}"
+      kube_cluster: "${{ secrets.KUBE_CLUSTER }}"
+      kube_token: "${{ secrets.KUBE_TOKEN }}"
+      ecr_url: "${{ secrets.ECR_URL }}"
+
+
