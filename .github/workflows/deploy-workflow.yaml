@@ -73,7 +73,7 @@ jobs:
 
         - name: Deploy image to K8 cloud-platform-go-get-module (${{ inputs.env }}) namespace
           id: deploy-image
-          uses: vimeda/helm@v1.6.8
+          uses: vimeda/helm@v1.7.0
           with:
             release: go-get-module
             namespace: ${{ secrets.kube_namespace }}
