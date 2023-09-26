@@ -8,6 +8,9 @@ on:
 permissions:
   contents: write
 
+env:
+  ECR_ROLE_TO_ASSUME: ${{ secrets.ECR_ROLE_TO_ASSUME }}
+
 jobs:
   build-and-push:
     uses: ./.github/workflows/build-and-push-workflow.yaml
@@ -17,7 +20,7 @@ jobs:
       ecr_repo: webops/cloud-platform-go-get-module-ecr
       aws_region: eu-west-2
     secrets:
-      ecr_role_to_assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
+      ecr_role_to_assume: ${{ env.ECR_ROLE_TO_ASSUME }}
       ecr_url: ${{ secrets.ECR_URL }}
 
   deploy:
