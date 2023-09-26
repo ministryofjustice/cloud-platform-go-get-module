@@ -22,6 +22,11 @@ on:
       ecr_role_to_assume:
         description: 'ecr role to assume in aws'
         required: true
+    # Map the workflow outputs to job outputs
+    outputs:
+      REGISTRY:
+        description: "The ecr registry"
+        value: ${{ jobs.build-and-push.outputs.registry }}
 
 jobs:
   build-and-push:
