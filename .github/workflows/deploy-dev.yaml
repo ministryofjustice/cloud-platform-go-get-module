@@ -21,7 +21,6 @@ jobs:
       aws_region: eu-west-2
     secrets:
       ecr_role_to_assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
-      ecr_url: ${{ secrets.ECR_URL }}
 
   deploy:
     needs: build-and-push
