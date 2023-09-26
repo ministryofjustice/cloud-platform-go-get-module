@@ -34,6 +34,4 @@ jobs:
       kube_cert: "${{ secrets.KUBE_CERT }}"
       kube_cluster: "${{ secrets.KUBE_CLUSTER }}"
       kube_token: "${{ secrets.KUBE_TOKEN }}"
-      ecr_url: "${{ secrets.ECR_URL }}"
-
 

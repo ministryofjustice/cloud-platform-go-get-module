@@ -22,9 +22,6 @@ on:
       ecr_role_to_assume:
         description: 'ecr role to assume in aws'
         required: true
-      ecr_url:
-        description: 'the url for the ecr repo, where the image is pulled from'
-        required: true
 
 jobs:
   build-and-push:
@@ -36,6 +33,7 @@ jobs:
       contents: read  # This is required for actions/checkout
     outputs:
       IMAGE_TAG: ${{ steps.build-image.outputs.IMAGE_TAG }}
+      REGISTRY: ${{ steps.login-ecr.outputs.registry }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -59,11 +57,8 @@ jobs:
         id: build-image
         env:
           ECR_REPO: ${{ inputs.ecr_repo }}
-          # ECR_URL: ${{ secrets.ecr_url }}
           IMAGE_TAG: ${{ inputs.image_tag }}
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
-          echo $REGISTRY
-          echo $ECR_REPO
           docker build -t $REGISTRY/$ECR_REPO:$IMAGE_TAG .
           docker push $REGISTRY/$ECR_REPO:$IMAGE_TAG
