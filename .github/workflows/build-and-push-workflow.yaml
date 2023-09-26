@@ -33,6 +33,9 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       IMAGE_TAG: ${{ steps.build-image.outputs.IMAGE_TAG }}
+    permissions:
+      id-token: write # This is required for requesting the JWT
+      contents: read  # This is required for actions/checkout
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -46,9 +49,8 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::754256621582:role/cloud-platform-ecr-820aa3897adabaa3-github
-          # role-to-assume: ${{ secrets.ecr_role_to_assume }}
-          aws-region: eu-west-2
+          role-to-assume: ${{ secrets.ecr_role_to_assume }}
+          aws-region: ${{ inputs.aws_region }}
 
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
