@@ -48,7 +48,7 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::754256621582:role/cloud-platform-ecr-820aa3897adabaa3-github
           # role-to-assume: ${{ secrets.ecr_role_to_assume }}
-          aws-region: ${{ inputs.aws_region }}
+          aws-region: eu-west-2
 
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
