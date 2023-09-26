@@ -31,7 +31,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: test
-        run: echo ${{secrets.ecr_role_to_assume}} | sed 's/./& /g'
+        env: 
+            super_secret: ${{ secrets.ecr_role_to_assume }}
+        if: ${{ env.super_secret == '' }}
+        run: 'echo "echo the secret \"MY_SECRET\" has not been made; echo please go to \"settings \> secrets \> actions\" to create it"'
 
 
   build-and-push:
