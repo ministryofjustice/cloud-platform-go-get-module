@@ -27,16 +27,6 @@ on:
         required: true
 
 jobs:
-  my-jobname:
-    runs-on: ubuntu-latest
-    steps:
-      - name: test
-        env: 
-            super_secret: ${{ secrets.ecr_role_to_assume }}
-        if: ${{ env.super_secret == '' }}
-        run: 'echo "echo the secret \"MY_SECRET\" has not been made; echo please go to \"settings \> secrets \> actions\" to create it"'
-
-
   build-and-push:
     name: Build container, push to ECR and deploy to the cluster
     environment: ${{ inputs.env }}
@@ -56,7 +46,8 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.ecr_role_to_assume }}
+          role-to-assume: arn:aws:iam::754256621582:role/cloud-platform-ecr-820aa3897adabaa3-github
+          # role-to-assume: ${{ secrets.ecr_role_to_assume }}
           aws-region: ${{ inputs.aws_region }}
 
       - name: Build, tag, and push image to Amazon ECR
