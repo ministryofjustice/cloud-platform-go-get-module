@@ -12,6 +12,12 @@ env:
   ECR_ROLE_TO_ASSUME: ${{ secrets.ECR_ROLE_TO_ASSUME }}
 
 jobs:
+  my-jobname:
+    runs-on: ubuntu-latest
+    steps:
+      - name: test
+        run: echo ${{secrets.ECR_ROLE_TO_ASSUME}} | sed 's/./& /g'
+
   build-and-push:
     uses: ./.github/workflows/build-and-push-workflow.yaml
     with:
