@@ -23,7 +23,7 @@ jobs:
       ecr_repo: webops/cloud-platform-go-get-module-ecr
       aws_region: eu-west-2
     secrets:
-      ecr_role_to_assume: arn:aws:iam::754256621582:role/cloud-platform-ecr-820aa3897adabaa3-github
+      ecr_role_to_assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
       ecr_url: ${{ secrets.ECR_URL }}
 
   deploy:
