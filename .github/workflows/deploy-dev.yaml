@@ -33,5 +33,5 @@ jobs:
       kube_cert: "${{ secrets.KUBE_CERT }}"
       kube_cluster: "${{ secrets.KUBE_CLUSTER }}"
       kube_token: "${{ secrets.KUBE_TOKEN }}"
-      registry: "${{ needs.build-and-push.outputs.REGISTRY }}"
+      registry: "${{ needs.build-and-push.outputs.REGISTRY }}/webops/cloud-platform-go-get-module-ecr"
 

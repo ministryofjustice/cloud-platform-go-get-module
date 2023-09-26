@@ -21,7 +21,6 @@ jobs:
       aws_region: eu-west-2
     secrets:
       ecr_role_to_assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
-      ecr_url: ${{ secrets.ECR_URL }}
 
   deploy:
     needs: build-and-push
@@ -34,4 +33,5 @@ jobs:
       kube_cert: "${{ secrets.KUBE_CERT }}"
       kube_cluster: "${{ secrets.KUBE_CLUSTER }}"
       kube_token: "${{ secrets.KUBE_TOKEN }}"
+      registry: "${{ needs.build-and-push.outputs.REGISTRY }}/webops/cloud-platform-go-get-module-ecr"
 

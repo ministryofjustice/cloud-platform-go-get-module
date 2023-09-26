@@ -24,7 +24,7 @@ on:
       kube_token:
         description: 'used to authenticate to the cluster'
         required: true
-      registry:
+      ecr_url:
         description: 'the url for the ecr repo, where the image is pulled from'
         required: true
 
@@ -79,7 +79,7 @@ jobs:
             namespace: ${{ secrets.kube_namespace }}
             chart: deploy
             values: |
-              ecrUrl: ${{ secrets.registry }}
+              ecrUrl: ${{ secrets.ecr_url }}
               imageTag: ${{ inputs.image_tag }}
               cluster: ${{ steps.set-cluster.outputs.CLUSTER }}
               ingressIdentifier: api-${{ secrets.kube_namespace }}-${{ steps.set-cluster.outputs.INGRESS_COLOUR }}
