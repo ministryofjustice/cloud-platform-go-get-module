@@ -31,11 +31,11 @@ jobs:
     name: Build container, push to ECR and deploy to the cluster
     environment: ${{ inputs.env }}
     runs-on: ubuntu-latest
-    outputs:
-      IMAGE_TAG: ${{ steps.build-image.outputs.IMAGE_TAG }}
     permissions:
       id-token: write # This is required for requesting the JWT
       contents: read  # This is required for actions/checkout
+    outputs:
+      IMAGE_TAG: ${{ steps.build-image.outputs.IMAGE_TAG }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -52,6 +52,9 @@ jobs:
           role-to-assume: ${{ secrets.ecr_role_to_assume }}
           aws-region: ${{ inputs.aws_region }}
 
+      - uses: aws-actions/amazon-ecr-login@v1
+        id: login-ecr
+
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
         env:
@@ -59,7 +62,6 @@ jobs:
           ECR_URL: ${{ secrets.ecr_url }}
           IMAGE_TAG: ${{ inputs.image_tag }}
         run: |
-          aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin $ECR_URL 
           docker build -t $ECR_REPO:$IMAGE_TAG .
           docker tag $ECR_REPO:$IMAGE_TAG $ECR_URL:$IMAGE_TAG
           docker push $ECR_URL:$IMAGE_TAG
