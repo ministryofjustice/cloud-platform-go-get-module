@@ -14,6 +14,9 @@ env:
 jobs:
   build-and-push:
     uses: ./.github/workflows/build-and-push-workflow.yaml
+    permissions:
+      id-token: write # This is required for requesting the JWT
+      contents: read  # This is required for actions/checkout
     with:
       env: development
       image_tag: ${{ github.sha }}
