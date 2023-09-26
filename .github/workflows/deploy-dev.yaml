@@ -17,8 +17,7 @@ jobs:
       ecr_repo: webops/cloud-platform-go-get-module-ecr
       aws_region: eu-west-2
     secrets:
-      ecr_aws_access_key_id: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
-      ecr_aws_secret_access_key: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
+      ecr_role_to_assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
       ecr_url: ${{ secrets.ECR_URL }}
 
   deploy:
