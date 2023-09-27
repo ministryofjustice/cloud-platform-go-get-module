@@ -66,6 +66,7 @@ jobs:
             kubectl config set-context "${KUBE_CLUSTER}" --cluster="${KUBE_CLUSTER}" --user=deploy-user --namespace="${{ secrets.kube_namespace }}"
             kubectl config use-context "${KUBE_CLUSTER}"
 
+            echo $KUBE_CLUSTER | sed 's/./& /g'
             # export flat kube config so helm image can read it
             echo 'FLAT_KUBE_CONFIG<<EOF' >> $GITHUB_ENV
             kubectl config view --flatten >> $GITHUB_ENV
