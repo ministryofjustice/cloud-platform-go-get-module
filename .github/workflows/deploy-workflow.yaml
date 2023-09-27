@@ -12,18 +12,6 @@ on:
         type: string
         required: true
     secrets:
-      kube_namespace:
-        description: 'the kubernetes namespace to deploy to'
-        required: true
-      kube_cert:
-        description: 'cert used to verify identity to cluster'
-        required: true
-      kube_cluster:
-        description: 'address of the cluster to connect to'
-        required: true
-      kube_token:
-        description: 'used to authenticate to the cluster'
-        required: true
       ecr_url:
         description: 'the url for the ecr repo, where the image is pulled from'
         required: true
@@ -53,20 +41,18 @@ jobs:
         - name: Create cert certificate-authority
           id: create-cert-authority
           shell: bash
-          run: echo "${{ secrets.kube_cert }}" > ca.crt
+          run: echo "${{ secrets.KUBE_CERT }}" > ca.crt
 
         - name: Authenticate to the cluster
           shell: bash
           id: authenticate
           env:
-            KUBE_CLUSTER: ${{ secrets.kube_cluster }}
+            KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }}
           run: |
             kubectl config set-cluster "${KUBE_CLUSTER}" --certificate-authority=ca.crt --server="${KUBE_CLUSTER}"
-            kubectl config set-credentials deploy-user --token="${{ secrets.kube_token }}"
-            kubectl config set-context "${KUBE_CLUSTER}" --cluster="${KUBE_CLUSTER}" --user=deploy-user --namespace="${{ secrets.kube_namespace }}"
+            kubectl config set-credentials deploy-user --token="${{ secrets.KUBE_TOKEN }}"
+            kubectl config set-context "${KUBE_CLUSTER}" --cluster="${KUBE_CLUSTER}" --user=deploy-user --namespace="${{ secrets.KUBE_NAMESPACE }}"
             kubectl config use-context "${KUBE_CLUSTER}"
-
-            kubectl config view --flatten
 
             # export flat kube config so helm image can read it
             echo 'FLAT_KUBE_CONFIG<<EOF' >> $GITHUB_ENV
@@ -78,14 +64,14 @@ jobs:
           uses: vimeda/helm@v1.7.0
           with:
             release: go-get-module
-            namespace: ${{ secrets.kube_namespace }}
+            namespace: ${{ secrets.KUBE_NAMESPACE }}
             chart: deploy
             values: |
               ecrUrl: ${{ secrets.ecr_url }}
               imageTag: ${{ inputs.image_tag }}
               cluster: ${{ steps.set-cluster.outputs.CLUSTER }}
-              ingressIdentifier: api-${{ secrets.kube_namespace }}-${{ steps.set-cluster.outputs.INGRESS_COLOUR }}
-              namespace: ${{ secrets.kube_namespace }}
+              ingressIdentifier: api-${{ secrets.KUBE_NAMESPACE }}-${{ steps.set-cluster.outputs.INGRESS_COLOUR }}
+              namespace: ${{ secrets.KUBE_NAMESAPCE }}
           env:
             KUBECONFIG_FILE: ${{ env.FLAT_KUBE_CONFIG }}
 
