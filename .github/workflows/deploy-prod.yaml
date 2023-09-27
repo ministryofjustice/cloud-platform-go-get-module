@@ -30,5 +30,9 @@ jobs:
       env: production
       image_tag: ${{ github.ref_name }}
     secrets:
+      kube_namespace: "${{ secrets.KUBE_NAMESPACE }}"
+      kube_cert: "${{ secrets.KUBE_CERT }}"
+      kube_cluster: "${{ secrets.KUBE_CLUSTER }}"
+      kube_token: "${{ secrets.KUBE_TOKEN }}"
       ecr_url: "${{ needs.build-and-push.outputs.REGISTRY }}/webops/cloud-platform-go-get-module-ecr"
 
