@@ -12,6 +12,10 @@ Head to the [Makefile](./Makefile) for basic commands
 
 Once you have merged your changes into main github actions will deploy the app to dev (which is hosted on the live-2 cluster). Once your changes have been deploy you can find them in the `cloud-platform-go-get-module` namespace and the API can be found on [dev url](https://modules.apps.live-2.cloud-platform.service.justice.gov.uk/) When you are happy that there are no issues with this deployment you can release to production (which is hosted on the live cluster) by tagging a github release using semver eg. 1.2.3. Once the action has deployed the change you will find the API in the `cloud-platform-got-get-module-prod` namespace and the deployed to the [production url](https://modules.apps.live-2.cloud-platform.service.justice.gov.uk/)
 
+#### terraform in environments repo
+
+Originally, the deployment of terraform to live-2 was covered by an automated pipeline, we have since removed this pipeline as it wasn't being used. If you need to update the terraform/ cluster resources then you will need to manually deploy the terraform to live-2
+
 ### Usage
 
 ```bash get all route
