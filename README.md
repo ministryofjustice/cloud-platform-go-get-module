@@ -29,3 +29,7 @@ curl -i https://modules.apps.live-2.cloud-platform.service.justice.gov.uk/cloud-
 ```bash update one repo route
 curl -X POST -H 'X-API-Key: $API_KEY' -i https://modules.apps.live-2.cloud-platform.service.justice.gov.uk/update/$REPO_NAME/$NEW_VERSION  
 ```
+### Please note container images:
+
+As part of the bitnami migration work that had to be completed to avoid breaking changes by 28/08/2025 it was found that this repository is using the bitnami redis image this has now been manually patched to use docker.io/bitnamilegacy/redis:7.0.8-debian-11-r0 as of 19/08/2025. This was done manually as it appears that the original deployment of the redis-helm chart was done manually. This will need to be manually brought into code and migrated away from bitnami to elasticache.
+
