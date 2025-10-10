@@ -1,6 +1,6 @@
 module github.com/ministryofjustice/cloud-platform-go-get-module
 
-go 1.19
+go 1.25
 
 require (
 	github.com/alicebob/miniredis/v2 v2.33.0
