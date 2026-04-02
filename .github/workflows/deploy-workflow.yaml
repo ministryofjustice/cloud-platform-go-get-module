@@ -34,7 +34,7 @@ jobs:
     environment: ${{ inputs.env }}
     steps:
         - name: Checkout
-          uses: actions/checkout@v4
+          uses: actions/checkout@1e31de5234b9f8995739874a8ce0492dc87873e2 # v4
 
         - name: Set cluster
           id: set-cluster
@@ -73,7 +73,7 @@ jobs:
 
         - name: Deploy image to K8 cloud-platform-go-get-module (${{ inputs.env }}) namespace
           id: deploy-image
-          uses: vimeda/helm@v1.7.0
+          uses: vimeda/helm@8fb24318e538359380b6acaaee9aa686d5f0c5cb # v1.7.0
           with:
             release: go-get-module
             namespace: ${{ secrets.kube_namespace }}
