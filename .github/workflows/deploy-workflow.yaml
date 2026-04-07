@@ -103,7 +103,7 @@ jobs:
               runAsNonRoot: true
             EOF
 
-            helm upgrade --install go-get-module deploy \ 
+            helm upgrade --install go-get-module deploy \
               --namespace "${NAMESPACE}" \
               --values "$VALUES_TEMP"
             
