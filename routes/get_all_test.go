@@ -30,7 +30,7 @@ func TestInitGetAll(t *testing.T) {
 			"GIVEN the correct param AND the param is in redis THEN return repos version data",
 			mockRdbClient,
 			200,
-			"[{\"repo\":\"foo\",\"currentVersion\":\"bar\"},{\"repo\":\"ping\",\"currentVersion\":\"pong\"},{\"repo\":\"sing\",\"currentVersion\":\"song\"}]",
+			"[{\"repo\":\"foo\",\"currentVersion\":\"bar\",\"sha\":\"abc123\"},{\"repo\":\"ping\",\"currentVersion\":\"pong\",\"sha\":\"def456\"},{\"repo\":\"sing\",\"currentVersion\":\"song\",\"sha\":\"ghi789\"}]",
 		},
 		{
 			"GIVEN the correct param BUT redis is down THEN return an error",
@@ -44,9 +44,9 @@ func TestInitGetAll(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			r := gin.New()
 			InitGetAll(r, tt.rdb)
-			tt.rdb.Set("foo", "bar", 0)
-			tt.rdb.Set("ping", "pong", 0)
-			tt.rdb.Set("sing", "song", 0)
+			tt.rdb.HMSet("foo", map[string]interface{}{"currentVersion": "bar", "sha": "abc123"})
+			tt.rdb.HMSet("ping", map[string]interface{}{"currentVersion": "pong", "sha": "def456"})
+			tt.rdb.HMSet("sing", map[string]interface{}{"currentVersion": "song", "sha": "ghi789"})
 
 			w := httptest.NewRecorder()
 			req, _ := http.NewRequest("GET", "/", nil)

@@ -5,16 +5,17 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/go-github/v50/github"
 	"github.com/ministryofjustice/cloud-platform-go-get-module/utils"
 	"go.uber.org/zap"
 
 	ginzap "github.com/gin-contrib/zap"
 )
 
-func InitRouter(r *gin.Engine, rdbClient utils.DataAccessLayer, apiKey string) {
+func InitRouter(r *gin.Engine, rdbClient utils.DataAccessLayer, githubClient *github.Client, apiKey string) {
 	InitGetAll(r, rdbClient)
 	InitGetOne(r, rdbClient)
-	InitPostOne(r, rdbClient, apiKey)
+	InitPostOne(r, githubClient, rdbClient, apiKey)
 
 	r.GET("/healthz", func(c *gin.Context) {
 		c.Status(http.StatusOK)

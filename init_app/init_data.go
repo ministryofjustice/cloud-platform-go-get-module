@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/google/go-github/v50/github"
+	"github.com/ministryofjustice/cloud-platform-go-get-module/githubutil"
 	"github.com/ministryofjustice/cloud-platform-go-get-module/utils"
 )
 
@@ -14,16 +15,15 @@ func InitDataClient(dataAddr, dataPassword string) utils.DataAccessLayer {
 	return initRedis(dataAddr, dataPassword)
 }
 
-func InitData(dataClient utils.DataAccessLayer) error {
-	client := github.NewClient(nil)
-	repos, err := getRepos(client)
+func InitData(dataClient utils.DataAccessLayer, githubClient *github.Client) error {
+	repos, err := getRepos(githubClient)
 
 	if err != nil {
 		return fmt.Errorf("error getting repo data from github API: %v", err)
 	}
 
 	for _, repo := range repos {
-		release, _, releaseErr := client.Repositories.GetLatestRelease(context.Background(), owner, *repo.Name)
+		release, _, releaseErr := githubClient.Repositories.GetLatestRelease(context.Background(), owner, *repo.Name)
 		if releaseErr != nil {
 			fmt.Printf("error getting latest release: %v", releaseErr)
 			continue
@@ -31,7 +31,13 @@ func InitData(dataClient utils.DataAccessLayer) error {
 
 		latestVersion := release.GetTagName()
 
-		dataErr := dataClient.Set(*repo.Name, latestVersion, 0).Err()
+		sha, shaErr := githubutil.GetTagCommitSHA(githubClient, owner, *repo.Name, latestVersion)
+		if shaErr != nil {
+			fmt.Printf("error getting sha: %v", shaErr)
+			continue
+		}
+
+		dataErr := dataClient.HMSet(*repo.Name, map[string]interface{}{"currentVersion": latestVersion, "sha": sha}).Err()
 		if dataErr != nil {
 			fmt.Printf("error setting version: %v", dataErr)
 			continue

@@ -5,10 +5,12 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/go-github/v50/github"
+	"github.com/ministryofjustice/cloud-platform-go-get-module/githubutil"
 	"github.com/ministryofjustice/cloud-platform-go-get-module/utils"
 )
 
-func InitPostOne(r *gin.Engine, rdb utils.DataAccessLayer, actualApiKey string) {
+func InitPostOne(r *gin.Engine, githubClient *github.Client, rdb utils.DataAccessLayer, actualApiKey string) {
 	r.POST("/update/:repo/:version", func(c *gin.Context) {
 		repo := c.Param("repo")
 
@@ -43,10 +45,20 @@ func InitPostOne(r *gin.Engine, rdb utils.DataAccessLayer, actualApiKey string) 
 			return
 		}
 
-		err := rdb.Set(repo, version, 0).Err()
+		sha, shaErr := githubutil.GetTagCommitSHA(githubClient, "ministryofjustice", repo, version)
+		if shaErr != nil {
+			obj := utils.Response{
+				Status: http.StatusBadGateway,
+				Error:  []string{"Resolving commit SHA from GitHub: " + shaErr.Error()},
+			}
+			utils.SendResponse(c, obj)
+			return
+		}
+
+		dataErr := rdb.HMSet(repo, map[string]interface{}{"currentVersion": version, "sha": sha}).Err()
 		// if there has been an error setting the value
 		// handle the error
-		if err != nil {
+		if dataErr != nil {
 			obj := utils.Response{
 				Status: http.StatusInternalServerError,
 				Error:  []string{"Writing to Redis"},
