@@ -16,6 +16,8 @@ spec:
         - name: application
           image: '{{ .Values.ecrUrl }}:{{ .Values.imageTag }}'
           imagePullPolicy: IfNotPresent
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
           ports:
             - containerPort: 3000
           readinessProbe:
