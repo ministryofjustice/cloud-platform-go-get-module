@@ -32,5 +32,4 @@ func InitLogger(r *gin.Engine) {
 	// Logs all panic to error log
 	//   - stack means whether output the stack info.
 	r.Use(ginzap.RecoveryWithZap(logger, true))
-
 }

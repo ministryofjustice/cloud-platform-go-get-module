@@ -43,4 +43,13 @@ spec:
                   key: redis-master-addr
             - name: GIN_MODE
               value: "release"
+            - name: GITHUB_APP_ID
+              value: "4830035"
+            - name: GITHUB_APP_INSTALLATION_ID
+              value: "159712141"
+            - name: GITHUB_APP_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: cloud-platform-go-get-module-private-key
+                  key: private_key
                     

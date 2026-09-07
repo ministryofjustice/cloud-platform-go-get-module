@@ -61,5 +61,4 @@ func InitPostOne(r *gin.Engine, rdb utils.DataAccessLayer, actualApiKey string) 
 		}
 		utils.SendResponse(c, obj)
 	})
-
 }

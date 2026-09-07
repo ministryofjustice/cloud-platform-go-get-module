@@ -1,6 +1,6 @@
 module github.com/ministryofjustice/cloud-platform-go-get-module
 
-go 1.25
+go 1.25.0
 
 require (
 	github.com/alicebob/miniredis/v2 v2.33.0
@@ -17,6 +17,7 @@ require (
 require (
 	github.com/ProtonMail/go-crypto v0.0.0-20230217124315-7d5c6f04bbb8 // indirect
 	github.com/alicebob/gopher-json v0.0.0-20200520072559-a9ecdc9d1d3a // indirect
+	github.com/bradleyfalzon/ghinstallation/v2 v2.19.0 // indirect
 	github.com/bytedance/sonic v1.12.1 // indirect
 	github.com/bytedance/sonic/loader v0.2.0 // indirect
 	github.com/cloudflare/circl v1.3.7 // indirect
@@ -29,8 +30,10 @@ require (
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.22.0 // indirect
 	github.com/goccy/go-json v0.10.3 // indirect
+	github.com/golang-jwt/jwt/v4 v4.5.2 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/google/go-querystring v1.1.0 // indirect
+	github.com/google/go-github/v88 v88.0.0 // indirect
+	github.com/google/go-querystring v1.2.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.8 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
