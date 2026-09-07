@@ -11,11 +11,20 @@ func InitGetOne(r *gin.Engine, rdb utils.DataAccessLayer) {
 	r.GET("/:repo", func(c *gin.Context) {
 		repo := c.Param("repo")
 
-		currentVersion, err := rdb.Get(repo)
+		currentVersionFields, err := rdb.HGetAll(repo)
 		if err != nil {
 			obj := utils.Response{
 				Status: http.StatusInternalServerError,
-				Error:  []string{"Reading from Redis, check the repo_name param for typos: " + repo},
+				Error:  []string{"Reading from Redis"},
+			}
+			utils.SendResponse(c, obj)
+			return
+		}
+
+		if len(currentVersionFields) == 0 {
+			obj := utils.Response{
+				Status: http.StatusNotFound,
+				Error:  []string{"Repo not found: " + repo},
 			}
 			utils.SendResponse(c, obj)
 			return
@@ -25,7 +34,8 @@ func InitGetOne(r *gin.Engine, rdb utils.DataAccessLayer) {
 			Status: http.StatusOK,
 			Data: gin.H{
 				"repo":           repo,
-				"currentVersion": currentVersion,
+				"currentVersion": currentVersionFields["currentVersion"],
+				"sha":            currentVersionFields["sha"],
 			},
 		}
 		utils.SendResponse(c, obj)

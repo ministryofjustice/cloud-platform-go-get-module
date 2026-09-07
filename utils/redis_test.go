@@ -18,12 +18,20 @@ func (r MockRedisGetDAL) Get(key string) (string, error) {
 	return "", errors.New("big redis error")
 }
 
+func (r MockRedisGetDAL) HGetAll(key string) (map[string]string, error) {
+	return nil, errors.New("big redis error")
+}
+
 func (r MockRedisGetDAL) Scan(cursor uint64, match string, count int64) *redis.ScanCmd {
 	return r.client.Scan(cursor, match, count)
 }
 
 func (r MockRedisGetDAL) Set(key string, value interface{}, expiration time.Duration) *redis.StatusCmd {
 	return r.client.Set(key, value, expiration)
+}
+
+func (r MockRedisGetDAL) HMSet(key string, values map[string]interface{}) *redis.StatusCmd {
+	return r.client.HMSet(key, values)
 }
 
 func TestGetAllRedisKeysAndValues(t *testing.T) {
@@ -44,7 +52,7 @@ func TestGetAllRedisKeysAndValues(t *testing.T) {
 		{
 			"GIVEN a redis cluster with multiple keys THEN return all the keys",
 			mockRdbClient,
-			[]RedisKeyVal{{"foo", "bar"}, {"test", "v1"}},
+			[]RedisKeyVal{{Repo: "foo", Version: "bar", Sha: "abc123"}, {Repo: "test", Version: "v1", Sha: "def456"}},
 			false,
 			true,
 		},
@@ -67,7 +75,7 @@ func TestGetAllRedisKeysAndValues(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if tt.setValues {
 				for _, val := range tt.want {
-					tt.rdb.Set(val.Repo, val.Version, 0)
+					tt.rdb.HMSet(val.Repo, map[string]interface{}{"currentVersion": val.Version, "sha": val.Sha})
 				}
 			}
 
