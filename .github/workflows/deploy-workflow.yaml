@@ -79,8 +79,8 @@ jobs:
             ECR_URL: ${{ secrets.ecr_url }}
             IMAGE_TAG: ${{ inputs.image_tag }}
             CLUSTER: ${{ steps.set-cluster.outputs.CLUSTER }}
-            INGRESS_IDENTIFIER: ${{ steps.set-cluster.outputs.INGRESS_IDENTIFIER }}
-            NAMESPACE: ${{ steps.set-cluster.outputs.NAMESPACE }}
+            INGRESS_IDENTIFIER: api-${{ secrets.kube_namespace }}-${{ steps.set-cluster.outputs.INGRESS_COLOUR }}
+            NAMESPACE: ${{ secrets.kube_namespace }}
           run: |
             KUBECONFIG_TEMP=$(mktemp)
             echo "$KUBECONFIG_FILE" > "$KUBECONFIG_TEMP"
