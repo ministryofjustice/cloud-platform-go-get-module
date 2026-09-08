@@ -17,7 +17,7 @@ jobs:
       # Install Go on the VM running the action.
       - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5
         with:
-          go-version: ">=1.19.0"
+          go-version: ">=1.25.2"
 
       - name: Install gofumpt
         run: |
@@ -28,8 +28,8 @@ jobs:
           gofumpt -l -d ./
 
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@23faadfdeb23a6f9e511beaba149bb123b5b145a # v6
+        uses: golangci/golangci-lint-action@4afd733a84b1f43292c63897423277bb7f4313a9 # v8
         with:
           # Optional: version of golangci-lint to use in form of v1.2 or v1.2.3 or `latest` to use the latest version
-          version: latest
+          version: v2.13.2
 
