@@ -7,19 +7,20 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
+	"github.com/google/go-github/v50/github"
 	"github.com/ministryofjustice/cloud-platform-go-get-module/githubutil"
 	"github.com/ministryofjustice/cloud-platform-go-get-module/routes"
 	"github.com/ministryofjustice/cloud-platform-go-get-module/utils"
 )
 
-func initGin(rdbClient utils.DataAccessLayer, apiKey string, ginMode string) *gin.Engine {
+func initGin(rdbClient utils.DataAccessLayer, githubClient *github.Client, apiKey string, ginMode string) *gin.Engine {
 	gin.SetMode(ginMode)
 
 	r := gin.New()
 
 	routes.InitLogger(r)
 
-	routes.InitRouter(r, rdbClient, apiKey)
+	routes.InitRouter(r, rdbClient, githubClient, apiKey)
 
 	return r
 }
@@ -88,8 +89,8 @@ func InitEnvVars() (string, string, string, string, githubutil.AppConfig) {
 	return ginModeVal, redisAddrVal, redisVal, apiKeyVal, appConfig
 }
 
-func InitApi(dataClient utils.DataAccessLayer, ginMode, apiKey string) {
-	r := initGin(dataClient, apiKey, ginMode)
+func InitApi(dataClient utils.DataAccessLayer, githubClient *github.Client, ginMode, apiKey string) {
+	r := initGin(dataClient, githubClient, apiKey, ginMode)
 
 	// Listen and Server in 0.0.0.0:3000
 	err := r.Run(":3000")

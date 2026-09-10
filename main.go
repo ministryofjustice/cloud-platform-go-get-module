@@ -29,5 +29,5 @@ func main() {
 		log.Errorf(context.Background(), "Error bootstraping the repo version data into redis: %v", err)
 	}
 
-	init_app.InitApi(dataClient, ginMode, apiKey)
+	init_app.InitApi(dataClient, githubClient, ginMode, apiKey)
 }
