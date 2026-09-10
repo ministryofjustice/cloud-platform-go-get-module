@@ -17,6 +17,7 @@ func TestInitGetOne(t *testing.T) {
 	server := miniredis.RunT(t)
 
 	mockRdbClient := utils.InitRedisClient(&redis.Options{Addr: server.Addr()})
+	mockErroredRdbClient := utils.InitRedisClient(&redis.Options{Addr: "fake:0000"})
 
 	tests := []struct {
 		name             string
@@ -29,15 +30,15 @@ func TestInitGetOne(t *testing.T) {
 			"GIVEN the correct param AND the param is in redis THEN return repo version data",
 			mockRdbClient,
 			200,
-			"{\"currentVersion\":\"bar\",\"repo\":\"foo\"}",
+			"{\"currentVersion\":\"bar\",\"repo\":\"foo\",\"sha\":\"abc123\"}",
 			"/foo",
 		},
 		{
-			"GIVEN a incorrect param AND the param is in redis THEN return a 500 error",
-			mockRdbClient,
+			"GIVEN the correct param BUT redis is down THEN return a 500 error",
+			mockErroredRdbClient,
 			500,
-			"{\"error\":\"Reading from Redis, check the repo_name param for typos: error\"}",
-			"/error",
+			"{\"error\":\"Reading from Redis\"}",
+			"/foo",
 		},
 	}
 	for _, tt := range tests {
@@ -45,7 +46,7 @@ func TestInitGetOne(t *testing.T) {
 			r := gin.New()
 			InitGetOne(r, tt.rdb)
 
-			tt.rdb.Set("foo", "bar", 0)
+			tt.rdb.HMSet("foo", map[string]interface{}{"currentVersion": "bar", "sha": "abc123"})
 			w := httptest.NewRecorder()
 			req, _ := http.NewRequest("GET", tt.urlParam, nil)
 			r.ServeHTTP(w, req)
@@ -54,4 +55,24 @@ func TestInitGetOne(t *testing.T) {
 			assert.Equal(t, tt.expectedResponse, w.Body.String())
 		})
 	}
+}
+
+func TestInitGetOne_MissingRepoReturnsNotFound(t *testing.T) {
+	gin.SetMode("test")
+	server := miniredis.RunT(t)
+
+	mockRdbClient := utils.InitRedisClient(&redis.Options{Addr: server.Addr()})
+
+	server.HSet("cloud-platform-terraform-s3-bucket", "currentVersion", "4.9.1", "sha", "9f2c1ab")
+
+	r := gin.New()
+	InitGetOne(r, mockRdbClient)
+
+	w := httptest.NewRecorder()
+
+	req, _ := http.NewRequest("GET", "/cloud-platform-terraform-unknown", nil)
+	r.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusNotFound, w.Code)
+	assert.Equal(t, "{\"error\":\"Repo not found: cloud-platform-terraform-unknown\"}", w.Body.String())
 }

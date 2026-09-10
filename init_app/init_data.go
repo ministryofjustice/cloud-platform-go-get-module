@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/google/go-github/v50/github"
+	"github.com/ministryofjustice/cloud-platform-go-get-module/githubutil"
 	"github.com/ministryofjustice/cloud-platform-go-get-module/utils"
 )
 
@@ -29,7 +30,13 @@ func InitData(dataClient utils.DataAccessLayer, githubClient *github.Client) err
 
 		latestVersion := release.GetTagName()
 
-		dataErr := dataClient.Set(*repo.Name, latestVersion, 0).Err()
+		sha, shaErr := githubutil.GetTagCommitSHA(githubClient, owner, *repo.Name, latestVersion)
+		if shaErr != nil {
+			fmt.Printf("error getting sha: %v", shaErr)
+			continue
+		}
+
+		dataErr := dataClient.HMSet(*repo.Name, map[string]interface{}{"currentVersion": latestVersion, "sha": sha}).Err()
 		if dataErr != nil {
 			fmt.Printf("error setting version: %v", dataErr)
 			continue
