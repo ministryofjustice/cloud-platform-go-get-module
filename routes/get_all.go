@@ -25,5 +25,4 @@ func InitGetAll(r *gin.Engine, rdb utils.DataAccessLayer) {
 		}
 		utils.SendResponse(c, obj)
 	})
-
 }

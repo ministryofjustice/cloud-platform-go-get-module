@@ -3,9 +3,11 @@ package init_app
 import (
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
+	"github.com/ministryofjustice/cloud-platform-go-get-module/githubutil"
 	"github.com/ministryofjustice/cloud-platform-go-get-module/routes"
 	"github.com/ministryofjustice/cloud-platform-go-get-module/utils"
 )
@@ -32,7 +34,7 @@ func initRedis(redisAddr, redisPassword string) utils.DataAccessLayer {
 	return utils.InitRedisClient(redisOptions)
 }
 
-func InitEnvVars() (string, string, string, string) {
+func InitEnvVars() (string, string, string, string, githubutil.AppConfig) {
 	redisVal, redisPresent := os.LookupEnv("REDIS_SECRET")
 	if redisVal == "" || !redisPresent {
 		log.Fatal("REDIS_SECRET is not set")
@@ -51,11 +53,39 @@ func InitEnvVars() (string, string, string, string) {
 	ginMode := "debug"
 	ginModeVal, ginModePresent := os.LookupEnv("GIN_MODE")
 	if ginModeVal == "" || !ginModePresent {
-		os.Setenv("GIN_MODE", ginMode)
 		ginModeVal = ginMode
 	}
 
-	return ginModeVal, redisAddrVal, redisVal, apiKeyVal
+	appIDVal, appIDPresent := os.LookupEnv("GITHUB_APP_ID")
+	if appIDVal == "" || !appIDPresent {
+		log.Fatal("GITHUB_APP_ID is not set")
+	}
+	appID, appIDErr := strconv.ParseInt(appIDVal, 10, 64)
+	if appIDErr != nil {
+		log.Fatal("GITHUB_APP_ID is not a number: ", appIDErr)
+	}
+
+	installationIDVal, installationIDPresent := os.LookupEnv("GITHUB_APP_INSTALLATION_ID")
+	if installationIDVal == "" || !installationIDPresent {
+		log.Fatal("GITHUB_APP_INSTALLATION_ID is not set")
+	}
+	installationID, installationIDErr := strconv.ParseInt(installationIDVal, 10, 64)
+	if installationIDErr != nil {
+		log.Fatal("GITHUB_APP_INSTALLATION_ID is not a number: ", installationIDErr)
+	}
+
+	privateKey, privateKeyPresent := os.LookupEnv("GITHUB_APP_PRIVATE_KEY")
+	if privateKey == "" || !privateKeyPresent {
+		log.Fatal("GITHUB_APP_PRIVATE_KEY is not set")
+	}
+
+	appConfig := githubutil.AppConfig{
+		AppID:          appID,
+		InstallationID: installationID,
+		PrivateKey:     []byte(privateKey),
+	}
+
+	return ginModeVal, redisAddrVal, redisVal, apiKeyVal, appConfig
 }
 
 func InitApi(dataClient utils.DataAccessLayer, ginMode, apiKey string) {
@@ -63,7 +93,6 @@ func InitApi(dataClient utils.DataAccessLayer, ginMode, apiKey string) {
 
 	// Listen and Server in 0.0.0.0:3000
 	err := r.Run(":3000")
-
 	if err != nil {
 		log.Fatal("Error starting server: ", err)
 	}

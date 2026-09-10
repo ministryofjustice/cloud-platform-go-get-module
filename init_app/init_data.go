@@ -14,16 +14,14 @@ func InitDataClient(dataAddr, dataPassword string) utils.DataAccessLayer {
 	return initRedis(dataAddr, dataPassword)
 }
 
-func InitData(dataClient utils.DataAccessLayer) error {
-	client := github.NewClient(nil)
-	repos, err := getRepos(client)
-
+func InitData(dataClient utils.DataAccessLayer, githubClient *github.Client) error {
+	repos, err := getRepos(githubClient)
 	if err != nil {
 		return fmt.Errorf("error getting repo data from github API: %v", err)
 	}
 
 	for _, repo := range repos {
-		release, _, releaseErr := client.Repositories.GetLatestRelease(context.Background(), owner, *repo.Name)
+		release, _, releaseErr := githubClient.Repositories.GetLatestRelease(context.Background(), owner, *repo.Name)
 		if releaseErr != nil {
 			fmt.Printf("error getting latest release: %v", releaseErr)
 			continue
@@ -42,7 +40,6 @@ func InitData(dataClient utils.DataAccessLayer) error {
 }
 
 func getRepos(client *github.Client) ([]*github.Repository, error) {
-
 	opt := &github.SearchOptions{
 		ListOptions: github.ListOptions{PerPage: 50},
 	}
@@ -52,7 +49,6 @@ func getRepos(client *github.Client) ([]*github.Repository, error) {
 
 	for {
 		repos, resp, err := client.Search.Repositories(context.Background(), "cloud-platform-terraform- in:name archived:false is:public org:ministryofjustice", opt)
-
 		if err != nil {
 			return nil, err
 		}
